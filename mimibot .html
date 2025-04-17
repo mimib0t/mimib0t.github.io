@@ -1,0 +1,252 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mimi - Tu espejo inteligente</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(to bottom, #ffe6f0, #fff0f5);
+      font-family: 'Quicksand', sans-serif;
+      margin: 0;
+      padding: 0;
+      color: #4b004b;
+    }
+
+    header {
+      background-color: #ffb6c1;
+      text-align: center;
+      padding: 20px;
+      color: white;
+    }
+
+    header h1 {
+      font-family: 'Pacifico', cursive;
+      font-size: 3em;
+      margin: 0;
+    }
+
+    header p {
+      font-size: 1.2em;
+      margin: 5px 0 0;
+    }
+
+    .container {
+      max-width: 750px;
+      margin: 30px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 25px;
+      box-shadow: 0 0 30px rgba(255, 182, 193, 0.4);
+      position: relative;
+    }
+
+    .mimi {
+      text-align: center;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .mirror-frame {
+      width: 180px;
+      height: 180px;
+      background: radial-gradient(circle, #ffe4f0 0%, #ffcce0 100%);
+      border-radius: 50%;
+      margin: 0 auto;
+      box-shadow: inset 0 0 10px #fff6fa;
+      position: relative;
+      transition: background 0.5s;
+    }
+
+    .face {
+      position: absolute;
+      top: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .eyes {
+      display: flex;
+      justify-content: space-between;
+      width: 70px;
+    }
+
+    .eye {
+      width: 14px;
+      height: 14px;
+      background: #333;
+      border-radius: 50%;
+    }
+
+    .mouth {
+      margin-top: 10px;
+      width: 24px;
+      height: 12px;
+      border-radius: 50%;
+      border-bottom: 3px solid #d63384;
+    }
+
+    .chat-box {
+      max-height: 300px;
+      overflow-y: auto;
+      border: 2px dashed #ffd1dc;
+      padding: 15px;
+      border-radius: 10px;
+      background: #fff8fb;
+      margin-bottom: 15px;
+    }
+
+    .message {
+      margin: 10px 0;
+    }
+
+    .user {
+      text-align: right;
+      color: #8c4a7c;
+    }
+
+    .bot {
+      text-align: left;
+      color: #d63384;
+    }
+
+    .input-area {
+      display: flex;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      border-radius: 12px 0 0 12px;
+      border: 1px solid #ccc;
+      font-size: 1em;
+      background: #fff0f8;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      background: #ff69b4;
+      color: white;
+      font-size: 1em;
+      border-radius: 0 12px 12px 0;
+      cursor: pointer;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Mimi</h1>
+    <p>Tu espejo inteligente que te ve con el corazón</p>
+  </header>
+
+  <div class="container">
+    <div class="mimi">
+      <div class="mirror-frame" id="mirrorFrame">
+        <div class="face">
+          <div class="eyes" id="eyes">
+            <div class="eye" id="eyeLeft"></div>
+            <div class="eye" id="eyeRight"></div>
+          </div>
+          <div class="mouth" id="mouth"></div>
+        </div>
+      </div>
+      <p><strong>¡Hola! Soy Mimi. Pregúntame lo que quieras.</strong></p>
+    </div>
+
+    <div class="chat-box" id="chatBox">
+      <div class="message bot">¿Qué quieres saber sobre belleza, salud mental o redes sociales?</div>
+    </div>
+
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="Escribe tu pregunta..." />
+      <button onclick="sendMessage()">Enviar</button>
+    </div>
+  </div>
+
+  <audio id="soundHappy" src="https://cdn.pixabay.com/download/audio/2022/10/30/audio_d89c32e0c8.mp3" preload="auto"></audio>
+  <audio id="soundSad" src="https://cdn.pixabay.com/download/audio/2022/03/31/audio_3f73127f1e.mp3" preload="auto"></audio>
+
+  <script>
+    function speak(text) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'es-ES';
+      speechSynthesis.speak(utterance);
+    }
+
+    function setEmotion(type) {
+      const frame = document.getElementById('mirrorFrame');
+      const mouth = document.getElementById('mouth');
+      const eyeLeft = document.getElementById('eyeLeft');
+      const eyeRight = document.getElementById('eyeRight');
+      const eyes = document.getElementById('eyes');
+      const soundHappy = document.getElementById('soundHappy');
+      const soundSad = document.getElementById('soundSad');
+
+      if (type === 'happy') {
+        frame.style.background = 'radial-gradient(circle, #ffe0f5 0%, #ffccf0 100%)';
+        mouth.style.borderBottom = '3px solid #d63384';
+        eyeLeft.style.borderRadius = '50%';
+        eyeRight.style.borderRadius = '50%';
+        soundHappy.play();
+      } else if (type === 'sad') {
+        frame.style.background = 'radial-gradient(circle, #e0cfff 0%, #c5b4ff 100%)';
+        mouth.style.borderBottom = 'none';
+        mouth.style.borderTop = '3px solid #d63384';
+        eyeLeft.style.borderRadius = '30% 30% 70% 70%';
+        eyeRight.style.borderRadius = '30% 30% 70% 70%';
+        soundSad.play();
+      } else if (type === 'wink') {
+        eyeRight.style.width = '4px';
+        eyeRight.style.height = '4px';
+        eyeRight.style.marginTop = '5px';
+        mouth.style.borderBottom = '3px solid #ff1493';
+      }
+    }
+
+    function sendMessage() {
+      const userInput = document.getElementById('userInput');
+      const chatBox = document.getElementById('chatBox');
+      const userMessage = userInput.value.trim();
+      if (userMessage === '') return;
+
+      const userDiv = document.createElement('div');
+      userDiv.className = 'message user';
+      userDiv.textContent = userMessage;
+      chatBox.appendChild(userDiv);
+
+      const botDiv = document.createElement('div');
+      botDiv.className = 'message bot';
+      botDiv.textContent = 'Pensando...';
+      chatBox.appendChild(botDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      // Simular respuesta con emoción
+      let reply = '¡Eres increíble! Sigue brillando como eres.';
+      setTimeout(() => {
+        botDiv.textContent = reply;
+        speak(reply);
+        if (reply.includes('triste') || reply.includes('preocupada')) {
+          setEmotion('sad');
+        } else if (reply.includes('brillando') || reply.includes('increíble')) {
+          setEmotion('happy');
+        } else {
+          setEmotion('wink');
+        }
+      }, 1200);
+
+      userInput.value = '';
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  </script>
+</body>
+</html>
